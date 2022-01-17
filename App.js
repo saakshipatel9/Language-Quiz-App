@@ -15,6 +15,9 @@ import * as Font from "expo-font";
 import AppLoading from "expo-app-loading";
 import { useState } from "react";
 
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+
 const fetchFonts = () => {
   return Font.loadAsync({
     "ropasans-regular": require("./assets/fonts/RopaSans-Regular.ttf"),
@@ -70,10 +73,55 @@ export default function App() {
 
 const BottomTabNavigator = () => {
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="home" component={Home} />
-      <Tab.Screen name="about" component={About} />
-      <Tab.Screen name="profile" component={Profile} />
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: "#FFABAB",
+        tabBarInactiveTintColor: "gray",
+      }}
+    >
+      <Tab.Screen
+        name="home"
+        component={Home}
+        options={{
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="home" color={color} size={40} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="profile"
+        component={Profile}
+        options={{
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="person" color={color} size={40} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="dictonary"
+        component={Profile}
+        options={{
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="bookmark" color={color} size={40} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="about"
+        component={About}
+        options={{
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="info" color={color} size={40} />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 };

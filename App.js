@@ -11,10 +11,37 @@ import { Profile } from "./Screens/Profile";
 import { Quiz } from "./Screens/Quiz";
 import { Dictionary } from "./Screens/Dictionary";
 
+import * as Font from "expo-font";
+import AppLoading from "expo-app-loading";
+import { useState } from "react";
+
+const fetchFonts = () => {
+  return Font.loadAsync({
+    "ropasans-regular": require("./assets/fonts/RopaSans-Regular.ttf"),
+    // "roboto-bold": require("./assets/fonts/Roboto-Bold.ttf"),
+    // "roboto-italic": require("./assets/fonts/Roboto-Italic.ttf"),
+    // "roboto-regular": require("./assets/fonts/Roboto-Regular.ttf"),
+  });
+};
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const [dataLoad, setDataLoad] = useState(false);
+
+  if (!dataLoad) {
+    return (
+      <AppLoading
+        startAsync={fetchFonts}
+        onFinish={() => {
+          setDataLoad(true);
+        }}
+        onError={console.warn}
+      />
+    );
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -31,7 +58,9 @@ export default function App() {
           <Stack.Screen name="dictionary" component={Dictionary} />
         </Stack.Group>
 
-        <Stack.Group screenOptions={{ presentation: "modal" }}>
+        <Stack.Group
+          screenOptions={{ presentation: "modal", headerShown: false }}
+        >
           <Stack.Screen name="login" component={Login} />
         </Stack.Group>
       </Stack.Navigator>

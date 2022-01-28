@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,18 +10,33 @@ import {
 } from "react-native";
 
 export function Login({ navigation }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   return (
     <View style={styles.main}>
       <View style={styles.form}>
         <Text style={styles.title}>login to continue</Text>
-        <TextInput style={styles.input} placeholder="email" />
+        <TextInput
+          style={styles.input}
+          placeholder="email"
+          value={email}
+          onChange={(text) => setEmail(text)}
+        />
         <TextInput
           style={styles.input}
           placeholder="password"
           secureTextEntry={true}
+          value={password}
+          onChange={(text) => setPassword(text)}
         />
 
-        <Pressable style={styles.button}>
+        <Pressable
+          style={styles.button}
+          onPress={() => {
+            console.log(email);
+          }}
+        >
           <Text style={styles.buttonText}>login</Text>
         </Pressable>
       </View>

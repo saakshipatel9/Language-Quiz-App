@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -32,6 +33,7 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   const [dataLoad, setDataLoad] = useState(false);
+  const [user, setUser] = useState(null);
 
   if (!dataLoad) {
     return (
@@ -48,24 +50,25 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Group>
-          <Stack.Screen
-            name="root"
-            component={BottomTabNavigator}
-            options={{ headerShown: false }}
-          />
-        </Stack.Group>
+        {!user && (
+          <Stack.Group
+            screenOptions={{ presentation: "modal", headerShown: false }}
+          >
+            <Stack.Screen name="login" component={Login} />
+          </Stack.Group>
+        )}
 
-        <Stack.Group>
-          <Stack.Screen name="quiz" component={Quiz} />
-          <Stack.Screen name="dictionary" component={Dictionary} />
-        </Stack.Group>
-
-        <Stack.Group
-          screenOptions={{ presentation: "modal", headerShown: false }}
-        >
-          <Stack.Screen name="login" component={Login} />
-        </Stack.Group>
+        {user && (
+          <Stack.Group>
+            <Stack.Screen
+              name="root"
+              component={BottomTabNavigator}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="quiz" component={Quiz} />
+            <Stack.Screen name="dictionary" component={Dictionary} />
+          </Stack.Group>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -81,22 +84,23 @@ const BottomTabNavigator = () => {
       }}
     >
       <Tab.Screen
-        name="home"
-        component={Home}
-        options={{
-          tabBarShowLabel: false,
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={40} />
-          ),
-        }}
-      />
-      <Tab.Screen
         name="profile"
         component={Profile}
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="person" color={color} size={40} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="home"
+        component={Home}
+        options={{
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="home" color={color} size={40} />
           ),
         }}
       />

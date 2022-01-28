@@ -61,6 +61,11 @@ export function Login({ navigation }) {
         <Pressable style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>login</Text>
         </Pressable>
+
+        <Text onPress={() => navigation.navigate("register")}>
+          No account yet?{" "}
+          <Text style={{ color: "#0D8BFF" }}>Register here</Text>
+        </Text>
       </View>
       <Image
         resizeMode="cover"

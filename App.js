@@ -19,6 +19,7 @@ import { useState } from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { auth } from "./firebase";
+import { Register } from "./Screens/Register";
 
 const fetchFonts = () => {
   return Font.loadAsync({
@@ -63,6 +64,7 @@ export default function App() {
             screenOptions={{ presentation: "modal", headerShown: false }}
           >
             <Stack.Screen name="login" component={Login} />
+            <Stack.Screen name="register" component={Register} />
           </Stack.Group>
         )}
 

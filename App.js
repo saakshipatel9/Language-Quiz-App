@@ -18,6 +18,7 @@ import { useState } from "react";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { auth } from "./firebase";
 
 const fetchFonts = () => {
   return Font.loadAsync({
@@ -34,6 +35,13 @@ const Tab = createBottomTabNavigator();
 export default function App() {
   const [dataLoad, setDataLoad] = useState(false);
   const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsub = auth.onAuthStateChanged((user) => {
+      setUser(user);
+    });
+    return unsub;
+  }, []);
 
   if (!dataLoad) {
     return (

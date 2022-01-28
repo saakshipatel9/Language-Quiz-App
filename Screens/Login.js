@@ -9,11 +9,38 @@ import {
   Pressable,
 } from "react-native";
 
+import { auth } from "../firebase";
+
 export function Login({ navigation }) {
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  return (
+  const handleLogin = () => {
+    setLoading(true);
+    auth
+      .signInWithEmailAndPassword(email, password)
+      .then((creds) => {
+        const user = creds.user;
+        console.log(user);
+        setLoading(false);
+      })
+      .catch((error) => {
+        alert(error.message);
+        setLoading(false);
+      });
+  };
+
+  return loading ? (
+    <View style={styles.main}>
+      <Text>Loading...</Text>
+      <Image
+        resizeMode="cover"
+        source={require("../assets/login-form-bg-img.png")}
+        style={styles.background}
+      />
+    </View>
+  ) : (
     <View style={styles.main}>
       <View style={styles.form}>
         <Text style={styles.title}>login to continue</Text>
@@ -21,22 +48,17 @@ export function Login({ navigation }) {
           style={styles.input}
           placeholder="email"
           value={email}
-          onChange={(text) => setEmail(text)}
+          onChangeText={(text) => setEmail(text)}
         />
         <TextInput
           style={styles.input}
           placeholder="password"
           secureTextEntry={true}
           value={password}
-          onChange={(text) => setPassword(text)}
+          onChangeText={(text) => setPassword(text)}
         />
 
-        <Pressable
-          style={styles.button}
-          onPress={() => {
-            console.log(email);
-          }}
-        >
+        <Pressable style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>login</Text>
         </Pressable>
       </View>

@@ -7,10 +7,10 @@ import { Button, StyleSheet, Text, View } from "react-native";
 
 import { Login } from "./Screens/Login";
 import { Home } from "./Screens/Home";
+import { Dictionary } from "./Screens/Dictionary";
 import { About } from "./Screens/About";
 import { Profile } from "./Screens/Profile";
 import { Quiz } from "./Screens/Quiz";
-import { Dictionary } from "./Screens/Dictionary";
 
 import * as Font from "expo-font";
 import AppLoading from "expo-app-loading";
@@ -105,18 +105,22 @@ const BottomTabNavigator = () => {
       />
 
       <Tab.Screen
-        name="home"
-        component={Home}
+        name="dictonary"
+        component={Dictionary}
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={40} />
+            <MaterialCommunityIcons
+              name="book-alphabet"
+              color={color}
+              size={40}
+            />
           ),
         }}
       />
 
       <Tab.Screen
-        name="dictonary"
+        name="bookmark"
         component={Profile}
         options={{
           tabBarShowLabel: false,

@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderColor: "black",
     borderWidth: 3,
-    fontSize: 30,
+    fontSize: 20,
     fontFamily: "ropasans-regular",
   },
 

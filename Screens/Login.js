@@ -18,6 +18,7 @@ export function Login({ navigation }) {
 
   const handleLogin = () => {
     setLoading(true);
+
     auth
       .signInWithEmailAndPassword(email, password)
       .then((creds) => {

@@ -8,7 +8,7 @@ import { Button, StyleSheet, Text, View } from "react-native";
 import { Login } from "./Screens/Login";
 import { Home } from "./Screens/Home";
 import { Dictionary } from "./Screens/Dictionary";
-import { About } from "./Screens/About";
+import { Setting } from "./Screens/Setting";
 import { Profile } from "./Screens/Profile";
 import { Quiz } from "./Screens/Quiz";
 
@@ -18,8 +18,10 @@ import { useState } from "react";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Entypo from "react-native-vector-icons/Entypo";
 import { auth } from "./firebase";
 import { Register } from "./Screens/Register";
+import { Question } from "./Screens/Question";
 
 const fetchFonts = () => {
   return Font.loadAsync({
@@ -75,8 +77,13 @@ export default function App() {
               component={BottomTabNavigator}
               options={{ headerShown: false }}
             />
-            <Stack.Screen name="quiz" component={Quiz} />
-            <Stack.Screen name="dictionary" component={Dictionary} />
+            {/* <Stack.Screen name="quiz" component={Quiz} />
+            <Stack.Screen name="dictionary" component={Dictionary} /> */}
+            <Stack.Screen
+              options={{ headerShown: false, presentation: "modal" }}
+              name="question"
+              component={Question}
+            />
           </Stack.Group>
         )}
       </Stack.Navigator>
@@ -120,23 +127,23 @@ const BottomTabNavigator = () => {
       />
 
       <Tab.Screen
-        name="bookmark"
-        component={Profile}
+        name="quiz"
+        component={Quiz}
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="bookmark" color={color} size={40} />
+            <Entypo name="game-controller" color={color} size={40} />
           ),
         }}
       />
 
       <Tab.Screen
-        name="about"
-        component={About}
+        name="setting"
+        component={Setting}
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="info" color={color} size={40} />
+            <MaterialIcons name="settings" color={color} size={40} />
           ),
         }}
       />

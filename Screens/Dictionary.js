@@ -13,13 +13,14 @@ import axios from "axios";
 // https://api.dictionaryapi.dev/api/v2/entries/en/<word>
 
 export function Dictionary({ navigation }) {
-  const [word, setWord] = useState(false);
+  const [word, setWord] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(true);
+  const [result, setResult] = useState(false);
 
   const handleSearch = async () => {
     setLoading(true);
     setWord(false);
+    setResult(false);
     console.log(word);
 
     axios
@@ -28,8 +29,12 @@ export function Dictionary({ navigation }) {
         // console.log(res.data[0]);
 
         setResult(res.data[0]);
+        setLoading(false);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
   };
 
   return (
@@ -44,6 +49,16 @@ export function Dictionary({ navigation }) {
         <TextInput
           value={word}
           onChangeText={(text) => setWord(text)}
+          returnKeyType="search"
+          onSubmitEditing={handleSearch}
+          onKeyPress={(ev) => {
+            console.log(ev);
+            // if (ev.key === "Enter") {
+            //   console.log("enter pressed");
+            //   ev.preventDefault();
+            //   handleSearch();
+            // }
+          }}
           placeholder="word"
           style={styles.input}
         />
@@ -54,7 +69,7 @@ export function Dictionary({ navigation }) {
         </Pressable>
       </View>
       <View style={styles.contentDiv}>
-        {result && (
+        {result && !loading && (
           <View>
             <Text style={styles.resultHeading}>{result?.word}</Text>
             <Text style={styles.resultSubheading}>
@@ -65,6 +80,7 @@ export function Dictionary({ navigation }) {
             </Text>
           </View>
         )}
+        {!result && loading && <Text style={{ marginTop: 100 }}>Loading</Text>}
       </View>
     </View>
   );
@@ -78,7 +94,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: "relative",
     backgroundColor: "white",
-    paddingTop: 60,
+    paddingTop: 50,
   },
   background: {
     position: "absolute",
@@ -107,7 +123,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderColor: "black",
     borderWidth: 3,
-    fontSize: 30,
+    fontSize: 25,
     fontFamily: "ropasans-regular",
   },
   button: {
@@ -130,6 +146,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 70,
     textAlign: "center",
+    marginTop: 15,
   },
   resultHeading: {
     textAlign: "center",

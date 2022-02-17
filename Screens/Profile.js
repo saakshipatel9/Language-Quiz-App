@@ -1,12 +1,23 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View, Image, Pressable } from "react-native";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 
 export function Profile({ navigation }) {
   const handleSignout = () => auth.signOut();
 
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
-    console.log("auth", auth?.currentUser);
+    console.log("auth", auth?.currentUser.uid);
+
+    db.collection("Users")
+      .where("userId", "==", auth?.currentUser.uid)
+      .get()
+      .then((res) =>
+        res.forEach((doc) => {
+          setUser(doc.data());
+        })
+      );
   });
 
   return (
@@ -16,10 +27,8 @@ export function Profile({ navigation }) {
         source={require("../assets/main-bg-img.png")}
         style={styles.background}
       />
-      <Text style={styles.email}>{auth.currentUser?.email}</Text>
-      <Text style={styles.college}>
-        birla vishwakarma mahavidalaya, v.v. nagar
-      </Text>
+      <Text style={styles.email}>{user?.name}</Text>
+      <Text style={styles.college}>{user?.college}</Text>
       <View style={styles.buttonDiv}>
         <Pressable style={styles.button} onPress={handleSignout}>
           <Text style={styles.buttonText}>setting</Text>

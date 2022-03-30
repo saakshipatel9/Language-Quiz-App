@@ -20,6 +20,7 @@
     "expo-font": "~10.0.4",
     "expo-status-bar": "~1.2.0",
     "firebase": "8.2.3",
+    "path-key": "^4.0.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.3",

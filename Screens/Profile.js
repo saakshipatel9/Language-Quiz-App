@@ -18,7 +18,7 @@ export function Profile({ navigation }) {
           setUser(doc.data());
         })
       );
-  });
+  }, []);
 
   return (
     <View style={styles.main}>

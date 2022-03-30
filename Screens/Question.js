@@ -1,4 +1,4 @@
-import { Button, Pressable, StyleSheet, Text, View } from "react-native";
+import { Button, Pressable, StyleSheet, Text, View, Image } from "react-native";
 import { db } from "./../firebase";
 import { useEffect } from "react";
 import axios from "axios";
@@ -6,14 +6,17 @@ import { useState } from "react";
 
 export function Question({ navigation }) {
   const [question, setQuestion] = useState(null);
+  const [showAnswer, setShowAnswer] = useState(false);
 
   async function fetchWord() {
-    let wordCount = await db
-      .collection("Words")
-      .get()
-      .then(function (querySnapshot) {
-        return querySnapshot.size;
-      });
+    // let wordCount = await db
+    //   .collection("Words")
+    //   .get()
+    //   .then(function (querySnapshot) {
+    //     return querySnapshot.size;
+    //   });
+
+    let wordCount = 300;
     let randomId = Math.floor(Math.random() * wordCount) + 1;
 
     return await db
@@ -31,14 +34,15 @@ export function Question({ navigation }) {
       await fetchWord(),
       await fetchWord(),
       await fetchWord(),
+      await fetchWord(),
     ];
     // console.log(wordList);
     return wordList;
   };
 
   const makeQuestion = async () => {
-    let questionIndex = Math.floor(Math.random() * 4);
     const wordList = await fourWords();
+    let questionIndex = Math.floor(Math.random() * wordList.length);
     const q = await axios
       .get(
         `https://api.dictionaryapi.dev/api/v2/entries/en/${wordList[questionIndex]}`
@@ -55,6 +59,7 @@ export function Question({ navigation }) {
       question: q,
       correct: questionIndex,
     });
+    setShowAnswer(false);
 
     // return {
     //   words: wordList,
@@ -64,25 +69,196 @@ export function Question({ navigation }) {
   };
 
   useEffect(async () => {
-    makeQuestion();
+    // makeQuestion();
   }, []);
+
+  const handleAnswer = (answerIndex) => {
+    setShowAnswer(true);
+  };
+
+  const newQuestion = () => {
+    setQuestion(null);
+    makeQuestion();
+  };
 
   return (
     <>
       {question && (
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-        >
+        <View style={styles.main}>
           <Text>Question Screen</Text>
+          <Image
+            resizeMode="cover"
+            source={require("../assets/question-bg-img.png")}
+            style={styles.background}
+          />
         </View>
       )}
       {!question && (
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-        >
-          <Text>Loading</Text>
+        <View style={styles.main}>
+          <View styles={styles.questionDiv}>
+            <Text style={styles.questionStatement}>
+              Dolore ullamco amet eu ipsum est dolore in anim excepteur aliquip
+              cillum.
+            </Text>
+          </View>
+
+          <View style={styles.optionDiv}>
+            <Pressable
+              style={{
+                ...styles.button,
+                backgroundColor: showAnswer ? "#4fc978" : "transparent",
+              }}
+              onPress={() => {
+                handleAnswer(0);
+              }}
+            >
+              <Text style={styles.buttonText}>piety</Text>
+            </Pressable>
+
+            <Pressable
+              style={{
+                ...styles.button,
+                backgroundColor: showAnswer ? "#ff6262" : "transparent",
+              }}
+              onPress={() => {
+                handleAnswer(1);
+              }}
+            >
+              <Text style={styles.buttonText}>pacifism</Text>
+            </Pressable>
+
+            <Pressable
+              style={{
+                ...styles.button,
+                backgroundColor: showAnswer ? "#ff6262" : "transparent",
+              }}
+              onPress={() => {
+                handleAnswer(2);
+              }}
+            >
+              <Text style={styles.buttonText}>greed</Text>
+            </Pressable>
+
+            <Pressable
+              style={{
+                ...styles.button,
+                backgroundColor: showAnswer ? "#ff6262" : "transparent",
+              }}
+              onPress={() => {
+                handleAnswer(3);
+              }}
+            >
+              <Text style={styles.buttonText}>wrath</Text>
+            </Pressable>
+
+            <Pressable
+              style={{
+                ...styles.button,
+                backgroundColor: showAnswer ? "#ff6262" : "transparent",
+              }}
+              onPress={() => {
+                handleAnswer(4);
+              }}
+            >
+              <Text style={styles.buttonText}>sloth</Text>
+            </Pressable>
+          </View>
+          <View>
+            <Pressable style={styles.nextButton}>
+              <Text style={styles.nextButtonText}>Next</Text>
+            </Pressable>
+          </View>
+
+          <Image
+            resizeMode="cover"
+            source={require("../assets/question-bg-img.png")}
+            style={styles.background}
+          />
         </View>
       )}
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  main: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+    backgroundColor: "rgba(0,0,0,0)",
+  },
+  background: {
+    position: "absolute",
+    top: 0,
+    width: "100%",
+    zIndex: -1,
+  },
+  questionDiv: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
+  questionNumber: {
+    fontFamily: "ropasans-regular",
+    fontSize: 70,
+    margin: 5,
+  },
+  questionStatement: {
+    margin: 10,
+    marginTop: 60,
+    padding: 15,
+    textAlign: "center",
+    fontFamily: "ropasans-regular",
+    fontSize: 25,
+    minHeight: 200,
+  },
+
+  optionDiv: {
+    top: 0,
+  },
+
+  button: {
+    margin: 5,
+    width: 300,
+    height: 50,
+    backgroundColor: "rgba(0,0,0,0)",
+    color: "white",
+    alignSelf: "flex-end",
+    borderWidth: 3,
+    borderColor: "black",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  buttonText: {
+    color: "gray",
+    fontFamily: "ropasans-regular",
+    alignSelf: "center",
+    alignItems: "center",
+    fontSize: 30,
+  },
+  nextButton: {
+    margin: 5,
+    width: 150,
+    height: 150,
+    backgroundColor: "black",
+    color: "white",
+    alignSelf: "flex-end",
+    borderWidth: 3,
+    borderColor: "black",
+    justifyContent: "center",
+    alignItems: "center",
+    bottom: -50,
+    borderRadius: 100,
+  },
+  nextButtonText: {
+    top: -20,
+    color: "white",
+    fontFamily: "ropasans-regular",
+    alignSelf: "center",
+    alignItems: "center",
+    fontSize: 30,
+  },
+});

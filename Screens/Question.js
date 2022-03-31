@@ -17,6 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function Question({ route, navigation }) {
   const { numberOfQuestions } = route.params;
+  const { level } = route.params;
   const [count, setCount] = useState(1);
   const [score, setScore] = useState(0);
   const [question, setQuestion] = useState(null);
@@ -30,8 +31,18 @@ export function Question({ route, navigation }) {
     //     return querySnapshot.size;
     //   });
 
-    let wordCount = 300;
-    let randomId = Math.floor(Math.random() * wordCount) + 1;
+    let wordCount;
+    if (level == 1) {
+      wordCount = 0;
+    }
+    if (level == 2) {
+      wordCount = 100;
+    }
+    if (level == 3) {
+      wordCount = 200;
+    }
+
+    let randomId = Math.floor(Math.random() * 100) + 1 + wordCount;
 
     return wordData[randomId].word;
 

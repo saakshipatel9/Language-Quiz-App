@@ -22,46 +22,52 @@ export function Quiz({ navigation }) {
         source={require("../assets/main-bg-img.png")}
         style={styles.background}
       />
-      <Text>Select Number of Questions</Text>
-      <SelectDropdown
-        defaultButtonText="Select number of questions"
-        statusBarTranslucent={true}
-        dropdownBackgroundColor={"red"}
-        defaultValue={"5 Questions"}
-        data={text}
-        buttonStyle={{
-          width: "50%",
-          height: 50,
-          backgroundColor: "rgba(0,0,0,0)",
-          paddingHorizontal: 0,
-          borderWidth: 3,
-          margin: 10,
-          borderColor: "#444",
-        }}
-        onSelect={(selectedItem, index) => {
-          console.log(selectedItem, index);
-        }}
-        buttonTextAfterSelection={(selectedItem, index) => {
-          // text represented after item is selected
-          // if data array is an array of objects then return selectedItem.property to render after item is selected
-          setNumberOfQuestions(number[index]);
-          return selectedItem;
-        }}
-        rowTextForSelection={(item, index) => {
-          // text represented for each item in dropdown
-          // if data array is an array of objects then return item.property to represent item in dropdown
-          return item;
-        }}
-      />
-      <Pressable
-        onPress={() => {
-          navigation.navigate("question", {
-            numberOfQuestions: numberOfQuestions,
-          });
+      <View
+        style={{
+          paddingBottom: 30,
         }}
       >
-        <Text style={styles.start}>Start Quiz</Text>
-      </Pressable>
+        <Text style={{ textAlign: "center" }}>Select Number of Questions</Text>
+        <SelectDropdown
+          defaultButtonText="Select number of questions"
+          statusBarTranslucent={true}
+          dropdownBackgroundColor={"red"}
+          defaultValue={"5 Questions"}
+          data={text}
+          buttonStyle={{
+            width: "50%",
+            height: 50,
+            backgroundColor: "rgba(0,0,0,0)",
+            paddingHorizontal: 0,
+            borderWidth: 3,
+            margin: 10,
+            borderColor: "#444",
+          }}
+          onSelect={(selectedItem, index) => {
+            console.log(selectedItem, index);
+          }}
+          buttonTextAfterSelection={(selectedItem, index) => {
+            // text represented after item is selected
+            // if data array is an array of objects then return selectedItem.property to render after item is selected
+            setNumberOfQuestions(number[index]);
+            return selectedItem;
+          }}
+          rowTextForSelection={(item, index) => {
+            // text represented for each item in dropdown
+            // if data array is an array of objects then return item.property to represent item in dropdown
+            return item;
+          }}
+        />
+        <Pressable
+          onPress={() => {
+            navigation.navigate("question", {
+              numberOfQuestions: numberOfQuestions,
+            });
+          }}
+        >
+          <Text style={styles.start}>Start Quiz</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }

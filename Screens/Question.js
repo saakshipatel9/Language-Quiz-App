@@ -3,6 +3,7 @@ import { db } from "./../firebase";
 import { useEffect } from "react";
 import axios from "axios";
 import { useState } from "react";
+import wordData from "./../data/words.json";
 
 export function Question({ navigation }) {
   const [question, setQuestion] = useState(null);
@@ -19,13 +20,16 @@ export function Question({ navigation }) {
     let wordCount = 300;
     let randomId = Math.floor(Math.random() * wordCount) + 1;
 
-    return await db
-      .collection("Words")
-      .where("id", "==", randomId)
-      .get()
-      .then(async (res) => {
-        return res.docs[0].data().word;
-      });
+    return wordData[randomId].word;
+
+    //comment when firebase has reached quota and use static data
+    // return await db
+    //   .collection("Words")
+    //   .where("id", "==", randomId)
+    //   .get()
+    //   .then(async (res) => {
+    //     return res.docs[0].data().word;
+    //   });
   }
 
   const fourWords = async () => {
@@ -41,6 +45,7 @@ export function Question({ navigation }) {
   };
 
   const makeQuestion = async () => {
+    setQuestion(null);
     const wordList = await fourWords();
     let questionIndex = Math.floor(Math.random() * wordList.length);
     const q = await axios
@@ -60,32 +65,22 @@ export function Question({ navigation }) {
       correct: questionIndex,
     });
     setShowAnswer(false);
-
-    // return {
-    //   words: wordList,
-    //   question: question,
-    //   correct: questionIndex,
-    // };
   };
 
   useEffect(async () => {
-    // makeQuestion();
+    makeQuestion();
+    // console.log(wordData);
   }, []);
 
   const handleAnswer = (answerIndex) => {
     setShowAnswer(true);
   };
 
-  const newQuestion = () => {
-    setQuestion(null);
-    makeQuestion();
-  };
-
   return (
     <>
-      {question && (
+      {!question && (
         <View style={styles.main}>
-          <Text>Question Screen</Text>
+          <Text>loading</Text>
           <Image
             resizeMode="cover"
             source={require("../assets/question-bg-img.png")}
@@ -93,78 +88,44 @@ export function Question({ navigation }) {
           />
         </View>
       )}
-      {!question && (
+      {question && (
         <View style={styles.main}>
           <View styles={styles.questionDiv}>
-            <Text style={styles.questionStatement}>
-              Dolore ullamco amet eu ipsum est dolore in anim excepteur aliquip
-              cillum.
-            </Text>
+            <Text style={styles.questionStatement}>{question.question}</Text>
           </View>
 
           <View style={styles.optionDiv}>
-            <Pressable
-              style={{
-                ...styles.button,
-                backgroundColor: showAnswer ? "#4fc978" : "transparent",
-              }}
-              onPress={() => {
-                handleAnswer(0);
-              }}
-            >
-              <Text style={styles.buttonText}>piety</Text>
-            </Pressable>
-
-            <Pressable
-              style={{
-                ...styles.button,
-                backgroundColor: showAnswer ? "#ff6262" : "transparent",
-              }}
-              onPress={() => {
-                handleAnswer(1);
-              }}
-            >
-              <Text style={styles.buttonText}>pacifism</Text>
-            </Pressable>
-
-            <Pressable
-              style={{
-                ...styles.button,
-                backgroundColor: showAnswer ? "#ff6262" : "transparent",
-              }}
-              onPress={() => {
-                handleAnswer(2);
-              }}
-            >
-              <Text style={styles.buttonText}>greed</Text>
-            </Pressable>
-
-            <Pressable
-              style={{
-                ...styles.button,
-                backgroundColor: showAnswer ? "#ff6262" : "transparent",
-              }}
-              onPress={() => {
-                handleAnswer(3);
-              }}
-            >
-              <Text style={styles.buttonText}>wrath</Text>
-            </Pressable>
-
-            <Pressable
-              style={{
-                ...styles.button,
-                backgroundColor: showAnswer ? "#ff6262" : "transparent",
-              }}
-              onPress={() => {
-                handleAnswer(4);
-              }}
-            >
-              <Text style={styles.buttonText}>sloth</Text>
-            </Pressable>
+            {question.words.map((word, index) => {
+              return (
+                <Pressable
+                  style={{
+                    ...styles.button,
+                    backgroundColor: showAnswer
+                      ? question.correct == index
+                        ? "#4fc978"
+                        : "#ff6262"
+                      : "transparent",
+                  }}
+                  onPress={() => {
+                    handleAnswer(0);
+                  }}
+                >
+                  <Text style={styles.buttonText}>{word}</Text>
+                </Pressable>
+              );
+            })}
           </View>
           <View>
-            <Pressable style={styles.nextButton}>
+            <Pressable
+              style={styles.nextButton}
+              onPress={() => {
+                if (showAnswer) {
+                  makeQuestion();
+                } else {
+                  alert("Answer the current question");
+                }
+              }}
+            >
               <Text style={styles.nextButtonText}>Next</Text>
             </Pressable>
           </View>

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View, Image, Pressable } from "react-native";
 import { auth, db } from "../firebase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export function Profile({ navigation }) {
+export function Profile({ route, navigation }) {
   const handleSignout = () => auth.signOut();
 
   const [user, setUser] = useState(null);

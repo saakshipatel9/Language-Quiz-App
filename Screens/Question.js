@@ -1,11 +1,24 @@
-import { Button, Pressable, StyleSheet, Text, View, Image } from "react-native";
+import {
+  Button,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableHighlight,
+} from "react-native";
 import { db } from "./../firebase";
 import { useEffect } from "react";
 import axios from "axios";
 import { useState } from "react";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import wordData from "./../data/words.json";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export function Question({ navigation }) {
+export function Question({ route, navigation }) {
+  const { numberOfQuestions } = route.params;
+  const [count, setCount] = useState(1);
+  const [score, setScore] = useState(0);
   const [question, setQuestion] = useState(null);
   const [showAnswer, setShowAnswer] = useState(false);
 
@@ -72,15 +85,40 @@ export function Question({ navigation }) {
     // console.log(wordData);
   }, []);
 
+  useEffect(() => {}, [count]);
+
   const handleAnswer = (answerIndex) => {
+    if (answerIndex == question.correct) setScore(score + 1);
     setShowAnswer(true);
+  };
+
+  const handleSave = (word) => {
+    if (!showAnswer) {
+      alert("Answer the current question");
+    } else {
+      alert("saved " + word);
+    }
+  };
+
+  const handleNext = () => {
+    if (showAnswer) {
+      setCount(count + 1);
+      if (count >= numberOfQuestions) {
+        alert(`Quiz Ended \n Score : ${score}/${1 * numberOfQuestions}`);
+        navigation.goBack();
+      } else {
+        makeQuestion();
+      }
+    } else {
+      alert("Answer the current question");
+    }
   };
 
   return (
     <>
       {!question && (
         <View style={styles.main}>
-          <Text>loading</Text>
+          <Text style={{ marginTop: 350 }}>loading</Text>
           <Image
             resizeMode="cover"
             source={require("../assets/question-bg-img.png")}
@@ -90,7 +128,77 @@ export function Question({ navigation }) {
       )}
       {question && (
         <View style={styles.main}>
-          <View styles={styles.questionDiv}>
+          <View
+            style={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "row",
+              marginTop: 30,
+              justifyContent: "space-between",
+              paddingHorizontal: 10,
+            }}
+          >
+            {/* <Button
+              title={"Save"}
+              onPress={() => {
+                if (question) {
+                  handleSave(question.words[question.correct]);
+                }
+              }}
+            /> */}
+            <TouchableHighlight
+              onPress={() => {
+                if (question) {
+                  handleSave(question.words[question.correct]);
+                }
+              }}
+            >
+              <View>
+                <MaterialIcons name="save" color={"black"} size={30} />
+              </View>
+            </TouchableHighlight>
+            <Text style={{ fontWeight: "bold", color: "white" }}>
+              Score: {score}
+            </Text>
+            <TouchableHighlight
+              onPress={() => {
+                if (question) {
+                  setShowAnswer(true);
+                }
+              }}
+            >
+              <View>
+                <MaterialIcons
+                  name="lightbulb-outline"
+                  color={"black"}
+                  size={30}
+                />
+              </View>
+            </TouchableHighlight>
+            {/* <Button
+              onPress={() => {
+                if (question) {
+                  setShowAnswer(true);
+                }
+              }}
+              title={"Hint"}
+            /> */}
+          </View>
+          <View
+            style={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "row",
+              marginTop: 0,
+              justifyContent: "flex-start",
+              padding: 10,
+              paddingHorizontal: 30,
+            }}
+          >
+            <Text style={styles.questionNumber}>
+              {count}
+              <Text style={{ fontSize: 30 }}>/{numberOfQuestions}</Text>
+            </Text>
             <Text style={styles.questionStatement}>{question.question}</Text>
           </View>
 
@@ -98,6 +206,7 @@ export function Question({ navigation }) {
             {question.words.map((word, index) => {
               return (
                 <Pressable
+                  key={index}
                   style={{
                     ...styles.button,
                     backgroundColor: showAnswer
@@ -107,7 +216,7 @@ export function Question({ navigation }) {
                       : "transparent",
                   }}
                   onPress={() => {
-                    handleAnswer(0);
+                    handleAnswer(index);
                   }}
                 >
                   <Text style={styles.buttonText}>{word}</Text>
@@ -119,11 +228,7 @@ export function Question({ navigation }) {
             <Pressable
               style={styles.nextButton}
               onPress={() => {
-                if (showAnswer) {
-                  makeQuestion();
-                } else {
-                  alert("Answer the current question");
-                }
+                handleNext();
               }}
             >
               <Text style={styles.nextButtonText}>Next</Text>
@@ -157,20 +262,19 @@ const styles = StyleSheet.create({
     zIndex: -1,
   },
   questionDiv: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
+    // flex: 1,
+    // display: "flex",
+    // flexDirection: "row",
+    // justifyContent: "flex-start",
   },
   questionNumber: {
     fontFamily: "ropasans-regular",
     fontSize: 70,
-    margin: 5,
+    margin: 0,
   },
   questionStatement: {
-    margin: 10,
-    marginTop: 60,
     padding: 15,
-    textAlign: "center",
+    textAlign: "left",
     fontFamily: "ropasans-regular",
     fontSize: 25,
     minHeight: 200,

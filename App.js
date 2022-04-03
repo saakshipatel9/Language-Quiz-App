@@ -38,6 +38,7 @@ const Tab = createBottomTabNavigator();
 export default function App() {
   const [dataLoad, setDataLoad] = useState(false);
   const [user, setUser] = useState(null);
+  console.disableYellowBox = true;
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged((user) => {

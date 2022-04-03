@@ -6,6 +6,8 @@ import {
   View,
   Image,
   TouchableHighlight,
+  Modal,
+  Alert,
 } from "react-native";
 import { db } from "./../firebase";
 import { useEffect } from "react";
@@ -22,6 +24,24 @@ export function Question({ route, navigation }) {
   const [score, setScore] = useState(0);
   const [question, setQuestion] = useState(null);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [questionList, setQuestionList] = useState(null);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  function useForceUpdate() {
+    const [value, setValue] = useState(0); // integer state
+    return () => setValue((value) => value + 1); // update the state to force render
+  }
+
+  const createTwoButtonAlert = () =>
+    Alert.alert("Alert Title", "My Alert Msg", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel",
+      },
+      { text: "OK", onPress: () => checkAnswer() },
+    ]);
 
   async function fetchWord() {
     // let wordCount = await db
@@ -83,24 +103,60 @@ export function Question({ route, navigation }) {
         console.log(err);
       });
 
-    setQuestion({
+    return {
       words: wordList,
       question: q,
+      answer: false,
       correct: questionIndex,
-    });
-    setShowAnswer(false);
+    };
+
+    // setQuestion({
+    //   words: wordList,
+    //   question: q,
+    //   correct: questionIndex,
+    // });
+    // setShowAnswer(false);
+  };
+
+  const makeTest = async () => {
+    let ql = [];
+    for (var i = 0; i < numberOfQuestions; i += 1) {
+      ql.push({ ...(await makeQuestion()), questionIndex: i });
+    }
+    console.log(ql);
+    setQuestionList(ql);
+
+    console.log(ql[0].question);
   };
 
   useEffect(async () => {
-    makeQuestion();
+    makeTest();
+    // makeQuestion();
     // console.log(wordData);
   }, []);
 
   useEffect(() => {}, [count]);
 
   const handleAnswer = (answerIndex) => {
-    if (answerIndex == question.correct) setScore(score + 1);
-    setShowAnswer(true);
+    let ql = questionList;
+    ql[currentQuestion].answer = answerIndex;
+    console.log({ currentQuestion, answerIndex });
+    next();
+
+    // setQuestionList(q1);
+
+    // if (answerIndex == questionList[currentQuestion]?.correct)
+    //   setScore(score + 1);
+    // setShowAnswer(true);
+    // console.log({ ql });
+  };
+
+  const countAnswer = () => {
+    let count = 0;
+    for (let x in questionList) {
+      if (questionList[x].answer != false) count += 1;
+    }
+    return count;
   };
 
   const handleSave = (word) => {
@@ -125,9 +181,33 @@ export function Question({ route, navigation }) {
     }
   };
 
+  const jumpQuestion = (questionIndex) => {
+    setCurrentQuestion(questionIndex);
+  };
+
+  const next = () => {
+    if (currentQuestion < numberOfQuestions - 1)
+      setCurrentQuestion(currentQuestion + 1);
+    else setCurrentQuestion(0);
+  };
+
+  const prev = () => {
+    if (currentQuestion > 0) setCurrentQuestion(currentQuestion - 1);
+    else setCurrentQuestion(numberOfQuestions - 1);
+  };
+
+  const submit = () => {
+    console.log(questionList);
+    createTwoButtonAlert();
+  };
+
+  const checkAnswer = () => {
+    console.log("answers checked");
+  };
+
   return (
     <>
-      {!question && (
+      {!questionList && (
         <View style={styles.main}>
           <Text style={{ marginTop: 350 }}>loading</Text>
           <Image
@@ -137,7 +217,7 @@ export function Question({ route, navigation }) {
           />
         </View>
       )}
-      {question && (
+      {questionList && (
         <View style={styles.main}>
           <View
             style={{
@@ -146,9 +226,54 @@ export function Question({ route, navigation }) {
               flexDirection: "row",
               marginTop: 30,
               justifyContent: "space-between",
+              alignItems: "center",
               paddingHorizontal: 10,
             }}
           >
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                Alert.alert("Modal has been closed.");
+                setModalVisible(!modalVisible);
+              }}
+            >
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <Text style={styles.modalText}>Choose a question</Text>
+                  <View style={styles.modalButtonDiv}>
+                    {questionList.map((item, index) => {
+                      return (
+                        <Pressable
+                          style={{
+                            ...styles.modalButton,
+                            backgroundColor:
+                              item.answer !== false ? "#FFABAB" : "gray",
+                          }}
+                          key={index}
+                          onPress={() => {
+                            jumpQuestion(index);
+                            setModalVisible(false);
+                          }}
+                        >
+                          <Text style={styles.modalButtonText}>
+                            {item.questionIndex + 1}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+
+                  <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => setModalVisible(!modalVisible)}
+                  >
+                    <Text style={styles.textStyle}>Close</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </Modal>
             {/* <Button
               title={"Save"}
               onPress={() => {
@@ -168,24 +293,17 @@ export function Question({ route, navigation }) {
                 <MaterialIcons name="save" color={"black"} size={30} />
               </View>
             </TouchableHighlight>
-            <Text style={{ fontWeight: "bold", color: "white" }}>
-              Score: {score}
-            </Text>
-            <TouchableHighlight
-              onPress={() => {
-                if (question) {
-                  setShowAnswer(true);
-                }
-              }}
-            >
+
+            {/* <Text>
+              Answered: {countAnswer()}/{numberOfQuestions}
+            </Text> */}
+
+            <TouchableHighlight onPress={() => setModalVisible(!modalVisible)}>
               <View>
-                <MaterialIcons
-                  name="lightbulb-outline"
-                  color={"black"}
-                  size={30}
-                />
+                <MaterialIcons name="info-outline" color={"black"} size={30} />
               </View>
             </TouchableHighlight>
+
             {/* <Button
               onPress={() => {
                 if (question) {
@@ -207,24 +325,27 @@ export function Question({ route, navigation }) {
             }}
           >
             <Text style={styles.questionNumber}>
-              {count}
+              {currentQuestion + 1}
               <Text style={{ fontSize: 30 }}>/{numberOfQuestions}</Text>
             </Text>
-            <Text style={styles.questionStatement}>{question.question}</Text>
+            <Text style={styles.questionStatement}>
+              {questionList[currentQuestion]?.question}
+            </Text>
           </View>
 
           <View style={styles.optionDiv}>
-            {question.words.map((word, index) => {
+            {questionList[currentQuestion]?.words.map((word, index) => {
               return (
                 <Pressable
                   key={index}
                   style={{
                     ...styles.button,
-                    backgroundColor: showAnswer
-                      ? question.correct == index
-                        ? "#4fc978"
-                        : "#ff6262"
-                      : "transparent",
+                    backgroundColor:
+                      questionList[currentQuestion].answer === false
+                        ? "white"
+                        : questionList[currentQuestion].answer == index
+                        ? "#FFABAB"
+                        : "white",
                   }}
                   onPress={() => {
                     handleAnswer(index);
@@ -235,11 +356,34 @@ export function Question({ route, navigation }) {
               );
             })}
           </View>
-          <View>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "120%",
+            }}
+          >
             <Pressable
               style={styles.nextButton}
               onPress={() => {
-                handleNext();
+                prev();
+              }}
+            >
+              <Text style={styles.nextButtonText}>Prev</Text>
+            </Pressable>
+            <Pressable
+              style={styles.nextButton}
+              onPress={() => {
+                submit();
+              }}
+            >
+              <Text style={styles.nextButtonText}>Submit</Text>
+            </Pressable>
+            <Pressable
+              style={styles.nextButton}
+              onPress={() => {
+                next();
               }}
             >
               <Text style={styles.nextButtonText}>Next</Text>
@@ -258,6 +402,55 @@ export function Question({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+
+    backgroundColor: "white",
+    borderRadius: 5,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    textAlign: "center",
+    fontFamily: "ropasans-regular",
+    fontSize: 25,
+  },
+  modalButtonDiv: {
+    marginTop: 20,
+    flex: 1,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    margin: 1,
+  },
+  modalButton: {
+    height: 50,
+    width: 50,
+    margin: 5,
+    display: "flex",
+    justifyContent: "center",
+    alignContent: "center",
+    backgroundColor: "grey",
+  },
+  modalButtonText: {
+    textAlign: "center",
+    color: "white",
+    fontFamily: "ropasans-regular",
+    fontSize: 25,
+  },
   main: {
     display: "flex",
     flexDirection: "column",
@@ -319,19 +512,19 @@ const styles = StyleSheet.create({
     margin: 5,
     width: 150,
     height: 150,
-    backgroundColor: "black",
+    backgroundColor: "white",
     color: "white",
     alignSelf: "flex-end",
-    borderWidth: 3,
-    borderColor: "black",
+    // borderWidth: 3,
+    // borderColor: "black",
     justifyContent: "center",
     alignItems: "center",
-    bottom: -50,
+    bottom: -200,
     borderRadius: 100,
   },
   nextButtonText: {
     top: -20,
-    color: "white",
+    color: "black",
     fontFamily: "ropasans-regular",
     alignSelf: "center",
     alignItems: "center",

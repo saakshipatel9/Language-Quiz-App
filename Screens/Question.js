@@ -34,13 +34,13 @@ export function Question({ route, navigation }) {
   }
 
   const createTwoButtonAlert = () =>
-    Alert.alert("Alert Title", "My Alert Msg", [
+    Alert.alert("Do you want to submit the quiz?", "", [
       {
-        text: "Cancel",
+        text: "No",
         onPress: () => console.log("Cancel Pressed"),
         style: "cancel",
       },
-      { text: "OK", onPress: () => checkAnswer() },
+      { text: "Yes", onPress: () => checkAnswer() },
     ]);
 
   async function fetchWord() {
@@ -202,7 +202,10 @@ export function Question({ route, navigation }) {
   };
 
   const checkAnswer = () => {
-    console.log("answers checked");
+    navigation.popToTop();
+    navigation.navigate("result", {
+      submission: questionList,
+    });
   };
 
   return (
@@ -282,17 +285,10 @@ export function Question({ route, navigation }) {
                 }
               }}
             /> */}
-            <TouchableHighlight
-              onPress={() => {
-                if (question) {
-                  handleSave(question.words[question.correct]);
-                }
-              }}
-            >
-              <View>
-                <MaterialIcons name="save" color={"black"} size={30} />
-              </View>
-            </TouchableHighlight>
+
+            <View>
+              <Text>{new Date().getTime()}</Text>
+            </View>
 
             {/* <Text>
               Answered: {countAnswer()}/{numberOfQuestions}
@@ -329,7 +325,7 @@ export function Question({ route, navigation }) {
               <Text style={{ fontSize: 30 }}>/{numberOfQuestions}</Text>
             </Text>
             <Text style={styles.questionStatement}>
-              {questionList[currentQuestion]?.question}
+              {questionList[currentQuestion]?.question.slice(0, 180)}
             </Text>
           </View>
 

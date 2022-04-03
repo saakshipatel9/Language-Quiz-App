@@ -22,6 +22,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import { auth } from "./firebase";
 import { Register } from "./Screens/Register";
 import { Question } from "./Screens/Question";
+import { Result } from "./Screens/Result";
 
 const fetchFonts = () => {
   return Font.loadAsync({
@@ -84,6 +85,11 @@ export default function App() {
               options={{ headerShown: false, presentation: "modal" }}
               name="question"
               component={Question}
+            />
+            <Stack.Screen
+              options={{ headerShown: false, presentation: "modal" }}
+              name="result"
+              component={Result}
             />
           </Stack.Group>
         )}

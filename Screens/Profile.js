@@ -1,3 +1,4 @@
+import React from "react";
 import { useEffect, useState } from "react";
 import {
   Button,
@@ -9,7 +10,8 @@ import {
   ScrollView,
 } from "react-native";
 import { auth, db } from "../firebase";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 
 export function Profile({ route, navigation }) {
   const handleSignout = () => auth.signOut();
@@ -84,6 +86,14 @@ export function Profile({ route, navigation }) {
     }
   }, [user]);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user) {
+        fetchResults(user.uid);
+      }
+    }, [user])
+  );
+
   useEffect(() => {
     console.log("result length: ", result.length);
   }, [result]);
@@ -111,51 +121,58 @@ export function Profile({ route, navigation }) {
           <View
             style={{
               width: 350,
+              paddingBottom: 100,
             }}
           >
-            {result.map((item, index) => {
-              return (
-                <Pressable
-                  onPress={() => {
-                    navigation.navigate("result", {
-                      submission: item.submission,
-                      date: item.time,
-                    });
-                  }}
-                  style={styles.questionViewButton}
-                >
-                  <View>
+            {result.length !== 0 &&
+              result.reverse().map((item, index) => {
+                return (
+                  <Pressable
+                    onPress={() => {
+                      navigation.navigate("result", {
+                        submission: item.submission,
+                        date: item.time,
+                      });
+                    }}
+                    style={styles.questionViewButton}
+                  >
                     <View>
-                      <Text style={styles.questionDate}>{item.time}</Text>
-                    </View>
-                    <Text style={styles.questionHeading}>
-                      Test {index + 1}{" "}
-                    </Text>
-                  </View>
-                  <View style={{ display: "flex", flexDirection: "row" }}>
-                    <View style={styles.statDiv}>
-                      <Text style={{ ...styles.statNumber, color: "green" }}>
-                        {findCorrect(item.submission)}
+                      <View>
+                        <Text style={styles.questionDate}>{item.time}</Text>
+                      </View>
+                      <Text style={styles.questionHeading}>
+                        Test {result.length - index}{" "}
                       </Text>
                     </View>
-                  </View>
-                  <View style={{ display: "flex", flexDirection: "row" }}>
-                    <View style={styles.statDiv}>
-                      <Text style={{ ...styles.statNumber, color: "red" }}>
-                        {findIncorrect(item.submission)}
-                      </Text>
+                    <View style={{ display: "flex", flexDirection: "row" }}>
+                      <View style={styles.statDiv}>
+                        <Text style={{ ...styles.statNumber, color: "green" }}>
+                          {findCorrect(item.submission)}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                  <View style={{ display: "flex", flexDirection: "row" }}>
-                    <View style={styles.statDiv}>
-                      <Text style={{ ...styles.statNumber, color: "grey" }}>
-                        {findSkipped(item.submission)}
-                      </Text>
+                    <View style={{ display: "flex", flexDirection: "row" }}>
+                      <View style={styles.statDiv}>
+                        <Text style={{ ...styles.statNumber, color: "red" }}>
+                          {findIncorrect(item.submission)}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                </Pressable>
-              );
-            })}
+                    <View style={{ display: "flex", flexDirection: "row" }}>
+                      <View style={styles.statDiv}>
+                        <Text style={{ ...styles.statNumber, color: "grey" }}>
+                          {findSkipped(item.submission)}
+                        </Text>
+                      </View>
+                    </View>
+                  </Pressable>
+                );
+              })}
+            {result.length == 0 && (
+              <Text style={{ textAlign: "center", marginTop: 200 }}>
+                No quiz attempted
+              </Text>
+            )}
           </View>
         }
       </ScrollView>

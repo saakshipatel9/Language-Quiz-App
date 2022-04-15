@@ -10,6 +10,7 @@ import { useEffect } from "react";
 
 export function Result({ route, navigation }) {
   const { submission } = route.params;
+  const { date } = route.params;
 
   const findCorrect = (questionList) => {
     let count = 0;
@@ -52,6 +53,7 @@ export function Result({ route, navigation }) {
   return (
     <View style={styles.main}>
       <Text style={styles.heading}>Result</Text>
+      <Text>{date}</Text>
       <View style={styles.stat}>
         <Text style={styles.statText}>
           Correct {"\n"}{" "}
@@ -70,7 +72,7 @@ export function Result({ route, navigation }) {
       <ScrollView style={styles.detailsDiv}>
         {submission.map((item, index) => {
           return (
-            <View style={styles.details}>
+            <View style={styles.details} key={index}>
               <Text style={styles.detailsQuestion}>
                 {item.questionIndex + 1}. {item.question}
               </Text>
@@ -136,7 +138,7 @@ const styles = StyleSheet.create({
 
     // backgroundColor: "yellow",
     alignSelf: "center",
-    padding: 20,
+    padding: 10,
     flex: 1,
     flexDirection: "row",
     maxHeight: 120,

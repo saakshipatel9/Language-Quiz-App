@@ -9,13 +9,13 @@ import {
   Modal,
   Alert,
 } from "react-native";
-import { db } from "./../firebase";
 import { useEffect } from "react";
 import axios from "axios";
 import { useState } from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import wordData from "./../data/words.json";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { db, auth } from "./../firebase";
 
 export function Question({ route, navigation }) {
   const { numberOfQuestions } = route.params;
@@ -203,8 +203,22 @@ export function Question({ route, navigation }) {
 
   const checkAnswer = () => {
     navigation.popToTop();
+
+    questionDate = new Date().toDateString();
+    //save data to cloud
+    db.collection("Results")
+      .doc()
+      .set({
+        time: questionDate,
+        userId: auth.currentUser.uid,
+        submission: questionList,
+      })
+      .then(() => console.log("success"))
+      .catch((err) => console.log(err));
+
     navigation.navigate("result", {
       submission: questionList,
+      date: questionDate,
     });
   };
 

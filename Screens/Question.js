@@ -16,9 +16,11 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import wordData from "./../data/words.json";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { db, auth } from "./../firebase";
+import CountDown from "react-native-countdown-component";
 
 export function Question({ route, navigation }) {
   const { numberOfQuestions } = route.params;
+  const numberOfSecsPerQuestion = 60;
   const { level } = route.params;
   const [count, setCount] = useState(1);
   const [score, setScore] = useState(0);
@@ -201,15 +203,20 @@ export function Question({ route, navigation }) {
     createTwoButtonAlert();
   };
 
+  const countDownTimerSubmit = () => {
+    checkAnswer();
+  };
+
   const checkAnswer = () => {
     navigation.popToTop();
 
-    questionDate = new Date().toDateString();
+    let questionDate = new Date().toDateString();
     //save data to cloud
     db.collection("Results")
       .doc()
       .set({
         time: questionDate,
+        stamp: +new Date(),
         userId: auth.currentUser.uid,
         submission: questionList,
       })
@@ -301,7 +308,23 @@ export function Question({ route, navigation }) {
             /> */}
 
             <View>
-              <Text>{new Date().getTime()}</Text>
+              <CountDown
+                until={numberOfSecsPerQuestion * numberOfQuestions}
+                onFinish={() => {
+                  countDownTimerSubmit();
+                }}
+                digitStyle={{ backgroundColor: "rgba(0,0,0,0)", margin: 0 }}
+                digitTxtStyle={{
+                  color: "black",
+                  fontFamily: "ropasans-regular",
+                  fontSize: 25,
+                }}
+                timeToShow={["M", "S"]}
+                size={10}
+                style={{ padding: 0 }}
+                timeLabels={{ m: "", s: "" }}
+                showSeparator={true}
+              />
             </View>
 
             {/* <Text>

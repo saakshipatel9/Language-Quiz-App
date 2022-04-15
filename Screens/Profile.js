@@ -125,49 +125,61 @@ export function Profile({ route, navigation }) {
             }}
           >
             {result.length !== 0 &&
-              result.reverse().map((item, index) => {
-                return (
-                  <Pressable
-                    onPress={() => {
-                      navigation.navigate("result", {
-                        submission: item.submission,
-                        date: item.time,
-                      });
-                    }}
-                    style={styles.questionViewButton}
-                  >
-                    <View>
+              result
+                .sort((a, b) => b.stamp - a.stamp)
+                .map((item, index) => {
+                  return (
+                    <Pressable
+                      onPress={() => {
+                        navigation.navigate("result", {
+                          submission: item.submission,
+                          date: item.time,
+                        });
+                      }}
+                      style={styles.questionViewButton}
+                    >
                       <View>
-                        <Text style={styles.questionDate}>{item.time}</Text>
-                      </View>
-                      <Text style={styles.questionHeading}>
-                        Test {result.length - index}{" "}
-                      </Text>
-                    </View>
-                    <View style={{ display: "flex", flexDirection: "row" }}>
-                      <View style={styles.statDiv}>
-                        <Text style={{ ...styles.statNumber, color: "green" }}>
-                          {findCorrect(item.submission)}
+                        <View>
+                          <Text style={styles.questionDate}>{item.time}</Text>
+                        </View>
+                        <Text style={styles.questionHeading}>
+                          Test {result.length - index}{" "}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 15,
+                            fontFamily: "ropasans-regular",
+                          }}
+                        >
+                          ({item.submission.length} questions)
                         </Text>
                       </View>
-                    </View>
-                    <View style={{ display: "flex", flexDirection: "row" }}>
-                      <View style={styles.statDiv}>
-                        <Text style={{ ...styles.statNumber, color: "red" }}>
-                          {findIncorrect(item.submission)}
-                        </Text>
+                      <View style={{ display: "flex", flexDirection: "row" }}>
+                        <View style={styles.statDiv}>
+                          <Text
+                            style={{ ...styles.statNumber, color: "green" }}
+                          >
+                            {findCorrect(item.submission)}
+                          </Text>
+                        </View>
                       </View>
-                    </View>
-                    <View style={{ display: "flex", flexDirection: "row" }}>
-                      <View style={styles.statDiv}>
-                        <Text style={{ ...styles.statNumber, color: "grey" }}>
-                          {findSkipped(item.submission)}
-                        </Text>
+                      <View style={{ display: "flex", flexDirection: "row" }}>
+                        <View style={styles.statDiv}>
+                          <Text style={{ ...styles.statNumber, color: "red" }}>
+                            {findIncorrect(item.submission)}
+                          </Text>
+                        </View>
                       </View>
-                    </View>
-                  </Pressable>
-                );
-              })}
+                      <View style={{ display: "flex", flexDirection: "row" }}>
+                        <View style={styles.statDiv}>
+                          <Text style={{ ...styles.statNumber, color: "grey" }}>
+                            {findSkipped(item.submission)}
+                          </Text>
+                        </View>
+                      </View>
+                    </Pressable>
+                  );
+                })}
             {result.length == 0 && (
               <Text style={{ textAlign: "center", marginTop: 200 }}>
                 No quiz attempted

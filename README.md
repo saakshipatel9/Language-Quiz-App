@@ -1,6 +1,10 @@
-# Quiz app
+# Language Quiz app
 
-Project for 6th sem. English words quiz app.
+* Developed a cross-platform app to apply quizzing methodology to improve English (use-case) vocabulary with ***interactive quizzes***, achieving a 9/10 CSAT score. 
+* Implemented randomizing techniques to increase variety and complexity in the next random (quiz) attempt using ***React Native***, cutting development time by 50%.  
+* Integrated Firebase for ***secure backend management***, ensuring scalability and global access. 
+* Designed UI in ***Figma***, compiled APK, and implemented key aspects of security features and password management 
+* Utilized ***JavaScript, Expo CLI, and Firebase*** to enhance development efficiency and platform maintainability.
 
 ### Project setup
 

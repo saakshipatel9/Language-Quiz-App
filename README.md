@@ -17,8 +17,8 @@
 1. Clone github repo
 
 ```
-    git clone https://github.com/DiKwickley/quizapp
-    cd quizapp
+    git clone https://github.com/saakshipatel9/Language-Quiz-App.git
+    cd Language-Quiz-App
 ```
 
 2. Install npm modules and start server
